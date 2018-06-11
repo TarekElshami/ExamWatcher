@@ -61,7 +61,7 @@ public class ExamWatcher extends javax.swing.JFrame {
         buttonSelectFolder = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("ExamWatcher");
+        setTitle("null");
         setAlwaysOnTop(true);
         setFocusCycleRoot(false);
         setIconImage((new javax.swing.ImageIcon(getClass().getResource("/com/gavab/examwatcher/ExamWatcher.png")).getImage()));
@@ -75,7 +75,7 @@ public class ExamWatcher extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 0, 0));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
-        jLabel2.setText("v 1.6 pato");
+        jLabel2.setText("v 1.7 pan");
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle"); // NOI18N
         problemLabel.setText(bundle.getString("NO WARNINGS")); // NOI18N

@@ -17,6 +17,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -26,7 +28,6 @@ public class FinishExam extends javax.swing.JDialog {
 
     private static ArrayList<String> logMessages = new ArrayList<>();
 
-    
     /**
      * Creates new form FinishExam
      */
@@ -180,17 +181,47 @@ public class FinishExam extends javax.swing.JDialog {
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void showEndZipGeneration() {
+        String ObjButtons[] = {java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("OK")};
+        String message = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("SUCCESSFULLY ZIP FILE GENERATION");
+        String title = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("ONLINE EXAMINATION SYSTEM");
+        JOptionPane.showOptionDialog(this, message, title, JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
+    }
+
+    private void showErrorInZipGeneration() {
+        String ObjButtons[] = {java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("OK")};
+        String message = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("ERROR IN ZIP FILE GENERATION");
+        String title = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("ONLINE EXAMINATION SYSTEM");
+        JOptionPane.showOptionDialog(this, message, title, JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
+    }
+
+
     private void buttonGenerateZipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateZipActionPerformed
         try {
-            JFileChooser f = new JFileChooser();
+            final JFileChooser f = new JFileChooser();
             f.setDialogTitle(java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("SELECT A FOLDER TO PUT THE ZIP"));
             f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                String outputFile = f.getSelectedFile().getAbsolutePath() + "/ExamenEDA.zip";
-                zipFolder(inputFolder, outputFile);
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        jProgressBar.setValue(0);
+                        try {
+                            String outputFile = f.getSelectedFile().getAbsolutePath() + "/ExamenEDA.zip";
+                            zipFolder(inputFolder, outputFile);
+                            showEndZipGeneration();
+                            notifyAll();
+                        } catch (Exception ex) {
+                            Logger.getLogger(ExamWatcher.class.getName()).log(Level.SEVERE, null, ex);
+                            showErrorInZipGeneration();
+                        }
+                    }
+                }).start();
+                wait();
             }
         } catch (Exception ex) {
             Logger.getLogger(ExamWatcher.class.getName()).log(Level.SEVERE, null, ex);
+            showErrorInZipGeneration();
         }    }//GEN-LAST:event_buttonGenerateZipActionPerformed
 
     private void jTFNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTFNameKeyReleased
@@ -199,7 +230,6 @@ public class FinishExam extends javax.swing.JDialog {
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jTFNameKeyReleased
 
-    
     int hashValue;
     int numFiles;
 
@@ -214,10 +244,9 @@ public class FinishExam extends javax.swing.JDialog {
         zip = new ZipOutputStream(fileWriter);
         addFolderToZip("", srcFolder, zip);
 
-        
-        jProgressBar.setValue(numFiles+1);
-        jProgressBar.setValue(numFiles+2);
-      
+        jProgressBar.setValue(numFiles + 1);
+        jProgressBar.setValue(numFiles + 2);
+
         //Final file with resume
         writeResumeFile(srcFolder + "/resume.txt");
         addFileToZip("", srcFolder + "/resume.txt", zip);
@@ -267,6 +296,7 @@ public class FinishExam extends javax.swing.JDialog {
         } else {
             numFiles++;
             jProgressBar.setValue(numFiles);
+
             byte[] buf = new byte[4096];
             int len;
             FileInputStream in = new FileInputStream(srcFile);
@@ -283,7 +313,7 @@ public class FinishExam extends javax.swing.JDialog {
     private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip)
             throws Exception {
         File folder = new File(srcFolder);
-        
+
         for (String fileName : folder.list()) {
             if (path.equals("")) {
                 addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
@@ -292,7 +322,7 @@ public class FinishExam extends javax.swing.JDialog {
             }
         }
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonGenerateZip;
