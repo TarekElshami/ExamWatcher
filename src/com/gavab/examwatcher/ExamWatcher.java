@@ -61,7 +61,7 @@ public class ExamWatcher extends javax.swing.JFrame {
         buttonSelectFolder = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("null");
+        setTitle("ExamWatcher");
         setAlwaysOnTop(true);
         setFocusCycleRoot(false);
         setIconImage((new javax.swing.ImageIcon(getClass().getResource("/com/gavab/examwatcher/ExamWatcher.png")).getImage()));
@@ -72,10 +72,10 @@ public class ExamWatcher extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(255, 0, 0));
+        jPanel1.setBackground(new java.awt.Color(255, 152, 0));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 48)); // NOI18N
-        jLabel2.setText("v 1.7 pan");
+        jLabel2.setText("v 1.8 orange");
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle"); // NOI18N
         problemLabel.setText(bundle.getString("NO WARNINGS")); // NOI18N
@@ -199,7 +199,7 @@ public class ExamWatcher extends javax.swing.JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
 
-                        Color STOP = Color.getHSBColor(0f,1f,1f);
+                        Color STOP = Color.getHSBColor(0.1f,1f,1f);
                         Color DANGER = Color.getHSBColor(0.7f,1f,1f);
                         Color OK = Color.getHSBColor(0.5f,1f,1f);
                         

@@ -5,6 +5,7 @@
  */
 package com.gavab.examwatcher;
 
+import java.awt.Cursor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -94,6 +95,7 @@ public class FinishExam extends javax.swing.JDialog {
             }
         });
 
+        jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jTextArea1.setLineWrap(true);
@@ -156,7 +158,7 @@ public class FinishExam extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private String inputFolder = "";
+    private String projectFolder = "";
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.setVisible(false);
@@ -168,8 +170,8 @@ public class FinishExam extends javax.swing.JDialog {
             f.setDialogTitle(java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("SELECT THE EXAM SRC FOLDER"));
             f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                inputFolder = f.getSelectedFile().getAbsolutePath();
-                jLabelDirName.setText(inputFolder);
+                projectFolder = f.getSelectedFile().getAbsolutePath();
+                jLabelDirName.setText(projectFolder);
 
                 if (jTFName.getText().length() > 5) {
                     buttonGenerateZip.setEnabled(true);
@@ -188,44 +190,54 @@ public class FinishExam extends javax.swing.JDialog {
         JOptionPane.showOptionDialog(this, message, title, JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
     }
 
-    private void showErrorInZipGeneration() {
+    private void showErrorInZipGeneration(String errorEspecifico) {
         String ObjButtons[] = {java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("OK")};
-        String message = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("ERROR IN ZIP FILE GENERATION");
+        String message = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("ERROR IN ZIP FILE GENERATION") + "\n" + errorEspecifico;
         String title = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("ONLINE EXAMINATION SYSTEM");
         JOptionPane.showOptionDialog(this, message, title, JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, ObjButtons, ObjButtons[0]);
     }
 
-
     private void buttonGenerateZipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGenerateZipActionPerformed
+        final FinishExam mainFrame = this;
         try {
             final JFileChooser f = new JFileChooser();
             f.setDialogTitle(java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("SELECT A FOLDER TO PUT THE ZIP"));
             f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-
                 new Thread(new Runnable() {
                     public void run() {
+                        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         jProgressBar.setValue(0);
                         try {
-                            String outputFile = f.getSelectedFile().getAbsolutePath() + "/ExamenEDA.zip";
-                            zipFolder(inputFolder, outputFile);
+                            String outputFile = f.getSelectedFile().getAbsolutePath() + "/ExamCode.zip";
+                            
+                            if (DirectoryRecursion(outputFile, projectFolder))
+                                throw new RuntimeException(java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("DIRECTORY RECURSION ERROR"));
+                            
+                            zipFolder(projectFolder, outputFile);
                             showEndZipGeneration();
-                            notifyAll();
                         } catch (Exception ex) {
                             Logger.getLogger(ExamWatcher.class.getName()).log(Level.SEVERE, null, ex);
-                            showErrorInZipGeneration();
+                            showErrorInZipGeneration(ex.getMessage());
                         }
+                        mainFrame.setCursor(Cursor.getDefaultCursor());
+                    }
+
+                    private boolean DirectoryRecursion(String outputFile, String projectFolder) {
+                        return (projectFolder.equals(outputFile.substring(0, projectFolder.length())));
                     }
                 }).start();
-                wait();
             }
         } catch (Exception ex) {
             Logger.getLogger(ExamWatcher.class.getName()).log(Level.SEVERE, null, ex);
-            showErrorInZipGeneration();
-        }    }//GEN-LAST:event_buttonGenerateZipActionPerformed
+            showErrorInZipGeneration(ex.getMessage());
+            mainFrame.setCursor(Cursor.getDefaultCursor());
+        }
+
+        }//GEN-LAST:event_buttonGenerateZipActionPerformed
 
     private void jTFNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTFNameKeyReleased
-        if ((jTFName.getText().length() > 5) && (inputFolder != "")) {
+        if ((jTFName.getText().length() > 5) && (projectFolder != "")) {
             buttonGenerateZip.setEnabled(true);
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jTFNameKeyReleased
@@ -295,7 +307,9 @@ public class FinishExam extends javax.swing.JDialog {
             addFolderToZip(path, srcFile, zip);
         } else {
             numFiles++;
-            jProgressBar.setValue(numFiles);
+            if (numFiles < 90) {
+                jProgressBar.setValue(numFiles);
+            }
 
             byte[] buf = new byte[4096];
             int len;
@@ -336,4 +350,5 @@ public class FinishExam extends javax.swing.JDialog {
     private javax.swing.JTextField jTFName;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
+
 }
