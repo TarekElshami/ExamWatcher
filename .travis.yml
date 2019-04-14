@@ -1,6 +1,6 @@
 language: java
 
-script: ant
+script: ant -buildfile build.xml
 
 addons:
   sonarcloud:
