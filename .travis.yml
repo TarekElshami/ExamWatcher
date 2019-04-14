@@ -1,5 +1,4 @@
 language: java
-script: ant jar
 
 addons:
   sonarcloud:
@@ -8,6 +7,6 @@ addons:
       secure: "IqQvAd3h1D73ciCgKa+1Qacny+OiMabyi2hJJHF079PFmZYL+5OlOja0cQlGT9YV9P2oRmJowihy4e1nZEI1GMsiR6Pom75yaYM2op/n9paG1qMaMzyrLM9Is3eUjEjy5UBSOOi9P9DQjIXz7k0LfckoyH7J2exb9wHj5JCivKMtm0BgDBR44JEJTF+MDYmRNUBzHRtwT8OPTu5xzdy4QS7sOMK/Nhn2PFnpdzVmtaKjoUNEyYew4OuHateloeTlyvZJHKWc48fyQc0q7hOCtG5bJ+70R9fa4NpDsRyS5kdVFFBlm6raPe8E54RHDsVntiVItUMabLzp7ZdxnonYwWBlsBS4j/oDOkZUauLNLTUUOhon9GTeW/QrKnBTp/S+g4HMkFbBcxlSp1+1es2BJc3b4Dh5wUmLK7uYVghtD1CFoisDyfVXvdRa3JXNan1wtyzFmdaup6RosLDy5epyAM3HPUsh48lQH5/vDfS4/GHvMYa4fw/qi7gaHA29nl4MMfAt28GVCfB1iFT3U110tyjg0ZaURkFewYdHjwcWs0IL+rnjkqUTpBLZODlT+0W4k9P1wKryYem2wwTKsg9UjfoPeHaRvZyIRMlCSJlJY6GQ2f3ztA3OJ/n7D6a9itU1L9vgHB0YLW055HkTJyKkDomXMBPFEIAX1jgF7bIkR9I="
 
 script:
-  # other script steps might be done before running the actual analysis
+  - ant
   - sonar-scanner
 
