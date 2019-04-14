@@ -12,7 +12,9 @@ script:
 
 deploy:
   provider: releases
-  api_key: "e396b0d8b15c976ef4c1d89fcebe78c21a179cf6"
+  api_key: 
+    secure: "xxP70L1mWGA+wFUOylgaKxRaDhaUbFoxV0SVXNeg/J7AHkFO45Ocd3v/gyn33+xPbRWTjwiMNpEalwVwg99VHUvnHhGwo9XxcMcBDX40ITSSD5ZpDoPuGnpBBY1SaKm5b15hSVoKCj6dBR8Mc+He9YVQXpVPuzkngHRxP6gxJMXY8p4EYzcsDzVg3v3M9jzGYdilnNNcB0trPVyz/RvYOGy/VjFz8gkbcp/serH677HrlMor6XfSmSSUas+6vKLwDxIHHXCDlvayXscIP9CkDXycOSl/sI/vI4lUBisT3QEf/I8Cv8CTQy9UQ8wy/V5j6YMau8CHFUpfIVRrCz83KpiE1x7+Hadr0cyG/qbtMRSLUfIFf4CBFsCXWDTUVnlIFwyVSQkdUADF7RyE6AC7CL6Z4w/kNQ1Ivjll4+LJLxJKpWtnAc1cJTW7q4ciPSfIGdIxz2emI72AI9lZiLSzL2yy9OL0hQQtEcfIsDEBUmLPknkhwKPB5nulQL1DBI7+Kw+FL0DtUNRphqo4SYI5YvQxxMvpBM9UElDleAGkC6yIiB+KBf3ajeJD0VkXc0jhi2hkw5SbqByjYWmt+6PTix4gLbqFA6ZE0p43VQBnO8AxB8q3OMVAIppo1LhB8eagZi6lnkECp7fceZWaKuh980OvbYuv4DrxIBcoymFDWKU="
+  
   file: "./dist/ExamWatcher.jar"
   skip_cleanup: true
   on:
