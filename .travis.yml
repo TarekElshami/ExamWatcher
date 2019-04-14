@@ -10,3 +10,13 @@ script:
   - ant
   - sonar-scanner
 
+deploy:
+  provider: releases
+  api_key: "e396b0d8b15c976ef4c1d89fcebe78c21a179cf6"
+  file: "./dist/ExamWatcher.jar"
+  skip_cleanup: true
+  on:
+    tags: true
+  
+  
+  
