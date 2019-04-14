@@ -1,6 +1,6 @@
 language: java
 
-ant
+script: ant
 
 addons:
   sonarcloud:
