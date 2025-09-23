@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.ArrayList;
 
 import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -102,7 +103,7 @@ public class ExamWatcher extends javax.swing.JFrame {
                 .addContainerGap(127, Short.MAX_VALUE))
         );
 
-        buttonSelectFolder.setText(bundle.getString("GENERATE EXAM DELIVERABLE")); // NOI18N
+        buttonSelectFolder.setText(bundle.getString("SELECT EXAM PROJECT FOLDER")); // NOI18N
         buttonSelectFolder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonSelectFolderActionPerformed(evt);
@@ -133,11 +134,38 @@ public class ExamWatcher extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    FinishExam finishDialog = new FinishExam(this,logMessages);
+    FinishExam finishDialog;
+    private String projectFolder = "";
 
-    private void buttonSelectFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSelectFolderActionPerformed
-        finishDialog.setVisible(true);
-    }//GEN-LAST:event_buttonSelectFolderActionPerformed
+    private void buttonSelectFolderActionPerformed(java.awt.event.ActionEvent evt) {
+        // Si aún no hay carpeta, pedirla
+        if (projectFolder == null || projectFolder.isEmpty()) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Selecciona la carpeta de trabajo");
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                projectFolder = chooser.getSelectedFile().getAbsolutePath();
+
+                // Crear el diálogo de final de examen con esa carpeta
+                finishDialog = new FinishExam(this, logMessages, projectFolder);
+
+                // Cambiar texto del botón
+                buttonSelectFolder.setText("Generate Exam Deliverable");
+
+                JOptionPane.showMessageDialog(this,
+                    "Carpeta seleccionada:\n" + projectFolder,
+                    "ExamWatcher",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            // Si ya hay carpeta seleccionada, abrir FinishExam
+            if (finishDialog == null) {
+                finishDialog = new FinishExam(this, logMessages, projectFolder);
+            }
+            finishDialog.setVisible(true);
+        }
+    }
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         String ObjButtons[] = {java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("EXIT"),java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("RETURN TO THE EXAM")};
