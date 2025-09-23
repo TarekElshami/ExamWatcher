@@ -153,6 +153,10 @@ public class ExamWatcher extends javax.swing.JFrame {
                 // Cambiar texto del botón
                 buttonSelectFolder.setText("Generate Exam Deliverable");
 
+                // Guardar snapshot inicial en el log
+                FolderWatcher folderWatcher = new FolderWatcher(projectFolder);
+                logMessages.addAll(folderWatcher.getInitialSnapshot());
+
                 JOptionPane.showMessageDialog(this,
                     "Carpeta seleccionada:\n" + projectFolder,
                     "ExamWatcher",
