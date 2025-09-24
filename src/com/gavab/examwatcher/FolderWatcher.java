@@ -11,19 +11,47 @@ import java.util.*;
 
 public class FolderWatcher {
 
-    private final String folderPath;
+    private final String projectFolder;
+    private long lastTotalSize = 0;
 
     public FolderWatcher(String folderPath) {
-        this.folderPath = folderPath;
+        this.projectFolder = folderPath;
+        this.lastTotalSize = calculateTotalSize();
+    }
+    
+    private long calculateTotalSize() {
+        return folderSize(new File(projectFolder));
+    }
+
+    private long folderSize(File folder) {
+        long length = 0;
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    length += file.length();
+                } else {
+                    length += folderSize(file);
+                }
+            }
+        }
+        return length;
+    }
+    
+    public boolean checkChange() {
+        long currentSize = calculateTotalSize();
+        boolean changed = currentSize != lastTotalSize;
+        lastTotalSize = currentSize;
+        return changed;
     }
 
     // Devuelve un snapshot inicial de todos los archivos
     public List<String> getInitialSnapshot() {
         List<String> snapshot = new ArrayList<>();
-        snapshot.add("=== Initial folder snapshot: " + folderPath + " ===");
+        snapshot.add("=== Initial folder snapshot: " + projectFolder + " ===");
 
         try {
-            Files.walk(Paths.get(folderPath))
+            Files.walk(Paths.get(projectFolder))
                 .filter(Files::isRegularFile)
                 .forEach(path -> {
                     try {

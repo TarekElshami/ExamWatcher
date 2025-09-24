@@ -136,6 +136,7 @@ public class ExamWatcher extends javax.swing.JFrame {
 
     FinishExam finishDialog;
     private String projectFolder = "";
+    private FolderWatcher folderWatcher;
 
     private void buttonSelectFolderActionPerformed(java.awt.event.ActionEvent evt) {
         // Si aún no hay carpeta, pedirla
@@ -154,7 +155,7 @@ public class ExamWatcher extends javax.swing.JFrame {
                 buttonSelectFolder.setText("Generate Exam Deliverable");
 
                 // Guardar snapshot inicial en el log
-                FolderWatcher folderWatcher = new FolderWatcher(projectFolder);
+                folderWatcher = new FolderWatcher(projectFolder);
                 logMessages.addAll(folderWatcher.getInitialSnapshot());
 
                 JOptionPane.showMessageDialog(this,
@@ -276,6 +277,14 @@ public class ExamWatcher extends javax.swing.JFrame {
                             logMessages.add(message);
                         }
                         state = NetworkState.connected;
+
+                        if (form.folderWatcher != null && form.folderWatcher.checkChange()) {
+                            String msg = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                                .format(Calendar.getInstance().getTime())
+                                + " - Suspicious change while network active";
+                            logMessages.add(msg);
+                            System.out.println(msg);
+                        }                        
                     }
 
                     private boolean testConection(String conexion) {
