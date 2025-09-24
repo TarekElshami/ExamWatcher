@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.ArrayList;
 
 import java.io.IOException;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 /*
@@ -154,6 +155,12 @@ public class ExamWatcher extends javax.swing.JFrame {
                 // Cambiar texto del botón
                 buttonSelectFolder.setText("Generate Exam Deliverable");
 
+                String message = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                    .format(Calendar.getInstance().getTime())
+                    + " - Project folder selected: " + projectFolder;
+                logMessages.add(message);
+                System.out.println(message);
+
                 // Guardar snapshot inicial en el log
                 folderWatcher = new FolderWatcher(projectFolder);
                 logMessages.addAll(folderWatcher.getInitialSnapshot());
@@ -278,13 +285,16 @@ public class ExamWatcher extends javax.swing.JFrame {
                         }
                         state = NetworkState.connected;
 
-                        if (form.folderWatcher != null && form.folderWatcher.checkChange()) {
-                            String msg = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
-                                .format(Calendar.getInstance().getTime())
-                                + " - Suspicious change while network active";
-                            logMessages.add(msg);
-                            System.out.println(msg);
-                        }                        
+                        if (form.folderWatcher != null) {
+                            List<String> changes = form.folderWatcher.checkChangesDetailed();
+                            if (changes != null && !changes.isEmpty()) {
+                                for (String change : changes) {
+                                    String suspiciousMsg = change + " [SUSPICIOUS: network was active]";
+                                    logMessages.add(suspiciousMsg);
+                                    System.out.println(suspiciousMsg);
+                                }
+                            }
+                        }                      
                     }
 
                     private boolean testConection(String conexion) {
