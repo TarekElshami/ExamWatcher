@@ -138,6 +138,7 @@ public class ExamWatcher extends javax.swing.JFrame {
     FinishExam finishDialog;
     private String projectFolder = "";
     private FolderWatcher folderWatcher;
+    private CopyWatcher copyWatcher;
 
     private void buttonSelectFolderActionPerformed(java.awt.event.ActionEvent evt) {
         // Si aún no hay carpeta, pedirla
@@ -165,6 +166,8 @@ public class ExamWatcher extends javax.swing.JFrame {
                 folderWatcher = new FolderWatcher(projectFolder);
                 logMessages.addAll(folderWatcher.getInitialSnapshot());
 
+                copyWatcher = new CopyWatcher(projectFolder);            
+
                 JOptionPane.showMessageDialog(this,
                     "Carpeta seleccionada:\n" + projectFolder,
                     "ExamWatcher",
@@ -174,6 +177,10 @@ public class ExamWatcher extends javax.swing.JFrame {
             // Si ya hay carpeta seleccionada, abrir FinishExam
             if (finishDialog == null) {
                 finishDialog = new FinishExam(this, logMessages, projectFolder);
+            }
+            // Pass the copyWatcher reference to FinishExam
+            if (copyWatcher != null) {
+                finishDialog.setCopyWatcher(copyWatcher);
             }
             finishDialog.setVisible(true);
         }
@@ -186,6 +193,9 @@ public class ExamWatcher extends javax.swing.JFrame {
         int PromptResult = JOptionPane.showOptionDialog(this,message,title,JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
         if(PromptResult==JOptionPane.YES_OPTION)
         {
+            if (copyWatcher != null) {
+                copyWatcher.shutdown();
+            }
             System.exit(0);
         }
     }//GEN-LAST:event_formWindowClosing
@@ -269,6 +279,9 @@ public class ExamWatcher extends javax.swing.JFrame {
                                 logMessages.add(message);
                             }
                             state = NetworkState.unconnected;
+                        }
+                        if (form.copyWatcher != null) {
+                            form.copyWatcher.checkForChanges();
                         }
                     }
 

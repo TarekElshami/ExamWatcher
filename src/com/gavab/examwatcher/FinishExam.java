@@ -29,6 +29,7 @@ public class FinishExam extends javax.swing.JDialog {
 
     private static ArrayList<String> logMessages = new ArrayList<>();
     private String projectFolder;
+    private CopyWatcher copyWatcher;
 
     /**
      * Creates new form FinishExam
@@ -42,6 +43,11 @@ public class FinishExam extends javax.swing.JDialog {
             jLabelDirName.setText(this.projectFolder);
         }
     }
+
+    public void setCopyWatcher(CopyWatcher copyWatcher) {
+        this.copyWatcher = copyWatcher;
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -183,6 +189,9 @@ public class FinishExam extends javax.swing.JDialog {
                         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         jProgressBar.setValue(0);
                         try {
+                            if (copyWatcher != null) {
+                                copyWatcher.setFinalizingExam(true);
+                            }
                             String outputFile = f.getSelectedFile().getAbsolutePath() + "/ExamCode.zip";
                             
                             if (DirectoryRecursion(outputFile, projectFolder))
@@ -193,6 +202,10 @@ public class FinishExam extends javax.swing.JDialog {
                         } catch (Exception ex) {
                             Logger.getLogger(ExamWatcher.class.getName()).log(Level.SEVERE, null, ex);
                             showErrorInZipGeneration(ex.getMessage());
+                        } finally {
+                            if (copyWatcher != null) {
+                                copyWatcher.setFinalizingExam(false);
+                            }
                         }
                         mainFrame.setCursor(Cursor.getDefaultCursor());
                     }
