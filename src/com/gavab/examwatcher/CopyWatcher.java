@@ -70,57 +70,86 @@ public class CopyWatcher {
         if (isFinalizingExam) {
             return; // Don't process during exam finalization
         }
-        
+
         Set<String> currentFiles = new HashSet<>();
-        
+
         try {
-            // Get current file list (excluding backup folder and resume.txt)
+            // Get current files and directories (excluding backup folder and resume.txt)
             Files.walk(Paths.get(projectFolder))
-                .filter(Files::isRegularFile)
                 .filter(path -> !path.toString().startsWith(backupFolder))
                 .filter(path -> !path.getFileName().toString().equals("resume.txt"))
                 .forEach(path -> {
                     currentFiles.add(path.toString());
-                    System.out.println("CopyWatcher DEBUG: Found file: " + path.toString());
+                    System.out.println("CopyWatcher DEBUG: Found path: " + path.toString());
                 });
-            
-            System.out.println("CopyWatcher DEBUG: Current files count: " + currentFiles.size() + ", Known files count: " + knownFiles.size());
-            
-            // Check for new files
+
+            System.out.println("CopyWatcher DEBUG: Current entries count: " + currentFiles.size()
+                + ", Known entries count: " + knownFiles.size());
+
+            // Check for new files/directories
             Set<String> newFiles = new HashSet<>(currentFiles);
             newFiles.removeAll(knownFiles);
-            
-            // Check for deleted files
+
+            // Check for deleted files/directories
             Set<String> deletedFiles = new HashSet<>(knownFiles);
             deletedFiles.removeAll(currentFiles);
-            
+
             if (!newFiles.isEmpty()) {
-                System.out.println("CopyWatcher DEBUG: New files detected: " + newFiles);
+                System.out.println("CopyWatcher DEBUG: New entries detected: " + newFiles);
             }
             if (!deletedFiles.isEmpty()) {
-                System.out.println("CopyWatcher DEBUG: Deleted files detected: " + deletedFiles);
+                System.out.println("CopyWatcher DEBUG: Deleted entries detected: " + deletedFiles);
             }
-            
-            // Process new files
+
+            // Process new files/directories
             for (String newFile : newFiles) {
-                System.out.println("CopyWatcher DEBUG: Processing new file: " + newFile);
-                processNewFile(newFile);
+                Path path = Paths.get(newFile);
+                if (Files.isDirectory(path)) {
+                    notifyDirectoryCreation(newFile);
+                } else {
+                    processNewFile(newFile);
+                }
             }
-            
-            // Process deleted files
+
+            // Process deleted files/directories
             for (String deletedFile : deletedFiles) {
-                System.out.println("CopyWatcher DEBUG: Processing deleted file: " + deletedFile);
-                processDeletedFile(deletedFile);
+                Path path = Paths.get(deletedFile);
+                if (Files.isDirectory(path)) {
+                    notifyDirectoryDeletion(deletedFile);
+                } else {
+                    processDeletedFile(deletedFile);
+                }
             }
-            
+
             // Update known files
             knownFiles = new HashSet<>(currentFiles);
-            
+
         } catch (IOException e) {
             System.err.println("Error checking for file changes: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
+    private void notifyDirectoryCreation(String dirPath) {
+        synchronized (lockObject) {
+            String timestamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+            String message = String.format("%s - DIRECTORY COPIED: %s", timestamp, dirPath);
+
+            copyWatcherMessages.add(message);
+            System.out.println("CopyWatcher: " + message);
+        }
+    }
+
+    private void notifyDirectoryDeletion(String dirPath) {
+        synchronized (lockObject) {
+            String timestamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+            String message = String.format("%s - DIRECTORY DELETED: %s", timestamp, dirPath);
+
+            copyWatcherMessages.add(message);
+            System.out.println("CopyWatcher: " + message);
+        }
+    }
+    
     
     private void processNewFile(String filePath) {
         try {
