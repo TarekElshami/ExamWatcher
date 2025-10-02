@@ -211,7 +211,10 @@ public class FinishExam extends javax.swing.JDialog {
                     }
 
                     private boolean DirectoryRecursion(String outputFile, String projectFolder) {
-                        return (projectFolder.equals(outputFile.substring(0, projectFolder.length())));
+                        if (outputFile.length() < projectFolder.length()) {
+                            return false; // <-- No puede estar dentro si es más corto
+                        }
+                        return projectFolder.equals(outputFile.substring(0, projectFolder.length()));
                     }
                 }).start();
             }
