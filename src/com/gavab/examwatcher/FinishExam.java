@@ -248,7 +248,10 @@ public class FinishExam extends javax.swing.JDialog {
 
         jProgressBar.setValue(numFiles + 1);
         jProgressBar.setValue(numFiles + 2);
-
+        
+        if (copyWatcher != null) {
+            logMessages.addAll(copyWatcher.getCopyWatcherMessages());
+        }
         //Final file with resume
         writeResumeFile(srcFolder + "/resume.txt");
         addFileToZip("", srcFolder + "/resume.txt", zip);
