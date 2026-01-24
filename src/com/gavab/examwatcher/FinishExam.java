@@ -204,6 +204,7 @@ public class FinishExam extends javax.swing.JDialog {
                             showErrorInZipGeneration(ex.getMessage());
                         } finally {
                             if (copyWatcher != null) {
+                                copyWatcher.checkForChanges();
                                 copyWatcher.setFinalizingExam(false);
                             }
                         }
@@ -294,28 +295,36 @@ public class FinishExam extends javax.swing.JDialog {
     }
 
     private void addFileToZip(String path, String srcFile, ZipOutputStream zip)
-            throws Exception {
-        File folder = new File(srcFile);
-        if (folder.isDirectory()) {
-            addFolderToZip(path, srcFile, zip);
+        throws Exception {
+    File folder = new File(srcFile);
+    if (folder.isDirectory()) {
+        addFolderToZip(path, srcFile, zip);
+    } else {
+        numFiles++;
+        if (numFiles < 90) {
+            jProgressBar.setValue(numFiles);
+        }
+
+        byte[] buf = new byte[4096];
+        int len;
+        
+        String entryName;
+        if (path.equals("")) {
+            entryName = folder.getName();
         } else {
-            numFiles++;
-            if (numFiles < 90) {
-                jProgressBar.setValue(numFiles);
-            }
+            entryName = path + "/" + folder.getName();
+        }
 
-            byte[] buf = new byte[4096];
-            int len;
-            FileInputStream in = new FileInputStream(srcFile);
-            //messageLabel.setText("Generando fichero ZIP");
-
-            zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
+        try (FileInputStream in = new FileInputStream(srcFile)) {
+            zip.putNextEntry(new ZipEntry(entryName));
             while ((len = in.read(buf)) > 0) {
                 zip.write(buf, 0, len);
                 acumulate(buf, len);
             }
+            zip.closeEntry();
         }
     }
+}
 
     private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip)
             throws Exception {

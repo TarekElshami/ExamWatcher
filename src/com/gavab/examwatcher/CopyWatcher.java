@@ -66,7 +66,7 @@ public class CopyWatcher {
     /**
      * Check for new or deleted files and process them
      */
-    public void checkForChanges() {
+    public synchronized void checkForChanges() {
         if (isFinalizingExam) {
             return; // Don't process during exam finalization
         }
