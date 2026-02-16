@@ -28,15 +28,26 @@ import javax.swing.SwingUtilities;
 public class FinishExam extends javax.swing.JDialog {
 
     private static ArrayList<String> logMessages = new ArrayList<>();
+    private String projectFolder;
+    private CopyWatcher copyWatcher;
 
     /**
      * Creates new form FinishExam
      */
-    public FinishExam(JFrame frame, ArrayList<String> logMessages) {
+    public FinishExam(JFrame frame, ArrayList<String> logMessages, String projectFolder) {
         super(frame);
         this.logMessages = logMessages;
+        this.projectFolder = projectFolder;
         initComponents();
+        if (this.projectFolder != null && !this.projectFolder.isEmpty()) {
+            jLabelDirName.setText(this.projectFolder);
+        }
     }
+
+    public void setCopyWatcher(CopyWatcher copyWatcher) {
+        this.copyWatcher = copyWatcher;
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -47,7 +58,6 @@ public class FinishExam extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
         jTFName = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -61,13 +71,6 @@ public class FinishExam extends javax.swing.JDialog {
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle"); // NOI18N
         setTitle(bundle.getString("GENERATE EXAMN DELIVERY FORM")); // NOI18N
         setAlwaysOnTop(true);
-
-        jButton1.setText("...");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
 
         jTFName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -100,7 +103,7 @@ public class FinishExam extends javax.swing.JDialog {
         jTextArea1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
-        jTextArea1.setText("INSTRUCCIONES\n\n1 - Rellena tu nombre y apellidos.\n\n2 - Selecciona la carpeta del proyecto que has desarrollado en el examen.\n\n3 - Pulsa generar ZIP y selecciona un directorio para ubicarlo.\n\n4 - Comprueba que el ZIP contiene tu código. En caso contrario vuelve a generar el ZIP.\n\n5 - Cierra el programa ExamWatcher.\n\n6 - Conecta el ordenador a Internet y sube el ZIP al aula virtual.\n");
+        jTextArea1.setText("INSTRUCCIONES\n\n1 - Rellena tu nombre y apellidos.\n\n2 - Pulsa generar ZIP y selecciona un directorio para ubicarlo.\n\n3 - Comprueba que el ZIP contiene tu código. En caso contrario vuelve a generar el ZIP.\n\n4 - Cierra el programa ExamWatcher.\n\n5 - Conecta el ordenador a Internet y sube el ZIP al aula virtual.\n");
         jScrollPane1.setViewportView(jTextArea1);
 
         jProgressBar.setStringPainted(true);
@@ -120,8 +123,7 @@ public class FinishExam extends javax.swing.JDialog {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabelDirName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(42, 42, 42))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -141,13 +143,12 @@ public class FinishExam extends javax.swing.JDialog {
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
                     .addComponent(jLabel2)
                     .addComponent(jLabelDirName))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
@@ -158,30 +159,9 @@ public class FinishExam extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private String projectFolder = "";
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            JFileChooser f = new JFileChooser();
-            f.setDialogTitle(java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("SELECT THE EXAM SRC FOLDER"));
-            f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            if (f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                projectFolder = f.getSelectedFile().getAbsolutePath();
-                jLabelDirName.setText(projectFolder);
-
-                if (jTFName.getText().length() > 5) {
-                    buttonGenerateZip.setEnabled(true);
-                }
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(ExamWatcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void showEndZipGeneration() {
         String ObjButtons[] = {java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("OK")};
@@ -209,6 +189,9 @@ public class FinishExam extends javax.swing.JDialog {
                         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         jProgressBar.setValue(0);
                         try {
+                            if (copyWatcher != null) {
+                                copyWatcher.setFinalizingExam(true);
+                            }
                             String outputFile = f.getSelectedFile().getAbsolutePath() + "/ExamCode.zip";
                             
                             if (DirectoryRecursion(outputFile, projectFolder))
@@ -219,12 +202,20 @@ public class FinishExam extends javax.swing.JDialog {
                         } catch (Exception ex) {
                             Logger.getLogger(ExamWatcher.class.getName()).log(Level.SEVERE, null, ex);
                             showErrorInZipGeneration(ex.getMessage());
+                        } finally {
+                            if (copyWatcher != null) {
+                                copyWatcher.checkForChanges();
+                                copyWatcher.setFinalizingExam(false);
+                            }
                         }
                         mainFrame.setCursor(Cursor.getDefaultCursor());
                     }
 
                     private boolean DirectoryRecursion(String outputFile, String projectFolder) {
-                        return (projectFolder.equals(outputFile.substring(0, projectFolder.length())));
+                        if (outputFile.length() < projectFolder.length()) {
+                            return false; // <-- No puede estar dentro si es más corto
+                        }
+                        return projectFolder.equals(outputFile.substring(0, projectFolder.length()));
                     }
                 }).start();
             }
@@ -258,7 +249,10 @@ public class FinishExam extends javax.swing.JDialog {
 
         jProgressBar.setValue(numFiles + 1);
         jProgressBar.setValue(numFiles + 2);
-
+        
+        if (copyWatcher != null) {
+            logMessages.addAll(copyWatcher.getCopyWatcherMessages());
+        }
         //Final file with resume
         writeResumeFile(srcFolder + "/resume.txt");
         addFileToZip("", srcFolder + "/resume.txt", zip);
@@ -301,28 +295,36 @@ public class FinishExam extends javax.swing.JDialog {
     }
 
     private void addFileToZip(String path, String srcFile, ZipOutputStream zip)
-            throws Exception {
-        File folder = new File(srcFile);
-        if (folder.isDirectory()) {
-            addFolderToZip(path, srcFile, zip);
+        throws Exception {
+    File folder = new File(srcFile);
+    if (folder.isDirectory()) {
+        addFolderToZip(path, srcFile, zip);
+    } else {
+        numFiles++;
+        if (numFiles < 90) {
+            jProgressBar.setValue(numFiles);
+        }
+
+        byte[] buf = new byte[4096];
+        int len;
+        
+        String entryName;
+        if (path.equals("")) {
+            entryName = folder.getName();
         } else {
-            numFiles++;
-            if (numFiles < 90) {
-                jProgressBar.setValue(numFiles);
-            }
+            entryName = path + "/" + folder.getName();
+        }
 
-            byte[] buf = new byte[4096];
-            int len;
-            FileInputStream in = new FileInputStream(srcFile);
-            //messageLabel.setText("Generando fichero ZIP");
-
-            zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
+        try (FileInputStream in = new FileInputStream(srcFile)) {
+            zip.putNextEntry(new ZipEntry(entryName));
             while ((len = in.read(buf)) > 0) {
                 zip.write(buf, 0, len);
                 acumulate(buf, len);
             }
+            zip.closeEntry();
         }
     }
+}
 
     private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip)
             throws Exception {
@@ -340,7 +342,6 @@ public class FinishExam extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonGenerateZip;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

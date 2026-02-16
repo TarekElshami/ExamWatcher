@@ -35,8 +35,7 @@
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jLabelDirName" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" pref="36" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
@@ -63,14 +62,13 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabelDirName" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="194" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jProgressBar" pref="26" max="32767" attributes="0"/>
+              <Component id="jProgressBar" pref="33" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -82,14 +80,6 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JButton" name="jButton1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="..."/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JTextField" name="jTFName">
       <Events>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTFNameKeyReleased"/>
@@ -147,7 +137,7 @@
             </Property>
             <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="INSTRUCCIONES&#xa;&#xa;1 - Rellena tu nombre y apellidos.&#xa;&#xa;2 - Selecciona la carpeta del proyecto que has desarrollado en el examen.&#xa;&#xa;3 - Pulsa generar ZIP y selecciona un directorio para ubicarlo.&#xa;&#xa;4 - Comprueba que el ZIP contiene tu c&#xf3;digo. En caso contrario vuelve a generar el ZIP.&#xa;&#xa;5 - Cierra el programa ExamWatcher.&#xa;&#xa;6 - Conecta el ordenador a Internet y sube el ZIP al aula virtual.&#xa;"/>
+            <Property name="text" type="java.lang.String" value="INSTRUCCIONES&#xa;&#xa;1 - Rellena tu nombre y apellidos.&#xa;&#xa;2 - Pulsa generar ZIP y selecciona un directorio para ubicarlo.&#xa;&#xa;3 - Comprueba que el ZIP contiene tu c&#xf3;digo. En caso contrario vuelve a generar el ZIP.&#xa;&#xa;4 - Cierra el programa ExamWatcher.&#xa;&#xa;5 - Conecta el ordenador a Internet y sube el ZIP al aula virtual.&#xa;"/>
           </Properties>
         </Component>
       </SubComponents>

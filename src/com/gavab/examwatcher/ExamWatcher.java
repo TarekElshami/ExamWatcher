@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.ArrayList;
 
 import java.io.IOException;
+import java.util.List;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -102,7 +104,7 @@ public class ExamWatcher extends javax.swing.JFrame {
                 .addContainerGap(127, Short.MAX_VALUE))
         );
 
-        buttonSelectFolder.setText(bundle.getString("GENERATE EXAM DELIVERABLE")); // NOI18N
+        buttonSelectFolder.setText(bundle.getString("SELECT EXAM PROJECT FOLDER")); // NOI18N
         buttonSelectFolder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonSelectFolderActionPerformed(evt);
@@ -133,11 +135,56 @@ public class ExamWatcher extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    FinishExam finishDialog = new FinishExam(this,logMessages);
+    FinishExam finishDialog;
+    private String projectFolder = "";
+    private FolderWatcher folderWatcher;
+    private CopyWatcher copyWatcher;
 
-    private void buttonSelectFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSelectFolderActionPerformed
-        finishDialog.setVisible(true);
-    }//GEN-LAST:event_buttonSelectFolderActionPerformed
+    private void buttonSelectFolderActionPerformed(java.awt.event.ActionEvent evt) {
+        // Si aún no hay carpeta, pedirla
+        if (projectFolder == null || projectFolder.isEmpty()) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Selecciona la carpeta de trabajo");
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                projectFolder = chooser.getSelectedFile().getAbsolutePath();
+
+                // Crear el diálogo de final de examen con esa carpeta
+                finishDialog = new FinishExam(this, logMessages, projectFolder);
+
+                // Cambiar texto del botón
+                buttonSelectFolder.setText("Generate Exam Deliverable");
+
+                String message = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                    .format(Calendar.getInstance().getTime())
+                    + " - Project folder selected: " + projectFolder;
+                logMessages.add(message);
+                System.out.println(message);
+
+                // Guardar snapshot inicial en el log
+                folderWatcher = new FolderWatcher(projectFolder);
+                logMessages.addAll(folderWatcher.getInitialSnapshot());
+
+                copyWatcher = new CopyWatcher(projectFolder);            
+
+                JOptionPane.showMessageDialog(this,
+                    "Carpeta seleccionada:\n" + projectFolder,
+                    "ExamWatcher",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            // Si ya hay carpeta seleccionada, abrir FinishExam
+            if (finishDialog == null) {
+                finishDialog = new FinishExam(this, logMessages, projectFolder);
+            }
+            // Pass the copyWatcher reference to FinishExam
+            if (copyWatcher != null) {
+                finishDialog.setCopyWatcher(copyWatcher);
+            }
+            finishDialog.setVisible(true);
+        }
+    }
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         String ObjButtons[] = {java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("EXIT"),java.util.ResourceBundle.getBundle("com/gavab/examwatcher/Bundle").getString("RETURN TO THE EXAM")};
@@ -146,6 +193,9 @@ public class ExamWatcher extends javax.swing.JFrame {
         int PromptResult = JOptionPane.showOptionDialog(this,message,title,JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
         if(PromptResult==JOptionPane.YES_OPTION)
         {
+            if (copyWatcher != null) {
+                copyWatcher.shutdown();
+            }
             System.exit(0);
         }
     }//GEN-LAST:event_formWindowClosing
@@ -230,6 +280,9 @@ public class ExamWatcher extends javax.swing.JFrame {
                             }
                             state = NetworkState.unconnected;
                         }
+                        if (form.copyWatcher != null) {
+                            form.copyWatcher.checkForChanges();
+                        }
                     }
 
                     private void violationActions(String errorType, Color color) {
@@ -244,6 +297,17 @@ public class ExamWatcher extends javax.swing.JFrame {
                             logMessages.add(message);
                         }
                         state = NetworkState.connected;
+
+                        if (form.folderWatcher != null) {
+                            List<String> changes = form.folderWatcher.checkChangesDetailed();
+                            if (changes != null && !changes.isEmpty()) {
+                                for (String change : changes) {
+                                    String suspiciousMsg = change + " [SUSPICIOUS: network was active]";
+                                    logMessages.add(suspiciousMsg);
+                                    System.out.println(suspiciousMsg);
+                                }
+                            }
+                        }                      
                     }
 
                     private boolean testConection(String conexion) {
